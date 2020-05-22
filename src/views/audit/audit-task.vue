@@ -2,23 +2,7 @@
 <template>
   <div class="app-container" @click="closeSidepage($event)">
     <div class="head">
-      <div class="head-buttons">
-        <el-button type="primary" size="small" class="head-button">
-          <i class="el-icon-refresh-right" />
-        </el-button>
-      </div>
-      <div class="search">
-        <search :items="selected.items" :visiable="false" @change="searchChanged" />
-      </div>
-      <div class="pagination">
-        <pagination
-          v-show="page.total>0"
-          :total="page.total"
-          :page.sync="page.currentPage"
-          :limit.sync="page.pageSize"
-          @pagination="debounceGetList"
-        />
-      </div>
+      <div />
     </div>
     <div class="table-info">
       <el-table
@@ -100,17 +84,24 @@
           </template>
         </el-table-column>
       </el-table>
-      <sidepage v-if="sidepagedata.sidepageShow" ref="Sidepage" :sidepagedata.sync="sidepagedata" />
+      <pagination
+        v-show="page.total>0"
+        :total="page.total"
+        :page.sync="page.currentPage"
+        :limit.sync="page.pageSize"
+        @pagination="debounceGetList"
+      />
+      <!-- sidepage v-if="sidepagedata.sidepageShow" ref="Sidepage" :sidepagedata.sync="sidepagedata" /> -->
     </div>
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination'
-import Search from '@/components/Search'
+// import Search from '@/components/Search'
 import { debounce } from '@/utils/index'
-import Sidepage from './components/Sidepage/task'
-import SidepageMixin from '@/mixins/toggleSidepage'
+// import Sidepage from './components/Sidepage/task'
+// import SidepageMixin from '@/mixins/toggleSidepage'
 const statusMap = {
   Editing: {
     name: '编辑中',
@@ -140,11 +131,11 @@ const statusMap = {
 export default {
   name: 'TaskList',
   components: {
-    Pagination,
-    Search,
-    Sidepage
+    Pagination
+    // Search,
+    // Sidepage
   },
-  mixins: [SidepageMixin],
+  // mixins: [SidepageMixin],
   data() {
     return {
       statusMap: statusMap,

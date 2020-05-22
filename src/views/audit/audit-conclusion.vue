@@ -4,9 +4,6 @@
       <div class="head-buttons">
         <el-button type="primary" size="small" class="head-button">预览检查单</el-button>
         <el-button type="primary" size="small" class="head-button">预览问题通知单</el-button>
-        <el-button type="primary" size="small" class="head-button">
-          <i class="el-icon-refresh-right" />
-        </el-button>
       </div>
     </div>
     <split-pane split="vertical" @resize="resize">
@@ -46,7 +43,7 @@
               <template v-slot="{row}">
                 <el-button-group>
                   <el-button
-                    type="warning"
+                    type="primary"
                     icon="el-icon-plus"
                     size="mini"
                     @click="addRecording(row)"
@@ -54,7 +51,7 @@
                     添加记录
                   </el-button>
                   <el-button
-                    type="warning"
+                    type="primary"
                     icon="el-icon-plus"
                     size="mini"
                     @click="addProblem(row)"

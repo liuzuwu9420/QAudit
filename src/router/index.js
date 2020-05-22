@@ -115,6 +115,18 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/check',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/ckeck-list/index'),
+        name: 'CkeckList',
+        meta: { title: 'ckeckList', icon: 'nested' }
+      }
+    ]
+  },
 
   /* {
     path: '/system',
