@@ -121,9 +121,9 @@ export const asyncRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/ckeck-list/index'),
-        name: 'CkeckList',
-        meta: { title: 'ckeckList', icon: 'nested' }
+        component: () => import('@/views/check-list/index'),
+        name: 'CheckList',
+        meta: { title: 'checkList', icon: 'nested' }
       }
     ]
   },
