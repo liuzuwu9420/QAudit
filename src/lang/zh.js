@@ -1,6 +1,12 @@
 export default {
   route: {
     dashboard: '首页',
+    audit: '审核',
+    auditPlan: '审核计划',
+    auditTask: '审核任务',
+    auditConclusion: '审核结论',
+    ckeckList: '检查单管理',
+    maintain: '供应商管理',
     systemManage: '系统管理',
     userManage: '员工管理',
     rolesManage: '角色管理',

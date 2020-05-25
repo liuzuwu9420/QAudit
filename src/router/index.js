@@ -127,6 +127,18 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/maintain',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/maintain/index'),
+        name: 'maintain',
+        meta: { title: 'maintain', icon: 'list' }
+      }
+    ]
+  },
 
   /* {
     path: '/system',

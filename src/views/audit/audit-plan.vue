@@ -1,6 +1,6 @@
 
 <template>
-  <div class="app-container" @click="closeSidepage($event)">
+  <div class="app-container">
     <div class="head">
       <div class="datePicker">
         <el-date-picker

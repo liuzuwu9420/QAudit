@@ -1,6 +1,12 @@
 export default {
   route: {
     dashboard: 'Dashboard',
+    audit: 'Audit',
+    auditPlan: 'Audit Plan',
+    auditTask: 'Audit Task',
+    auditConclusion: 'Audit Conclusion',
+    ckeckList: 'Ckeck Manage',
+    maintain: 'Maintain Manage',
     systemManage: 'System Manage',
     userManage: 'User Manage',
     rolesManage: 'Roles Manage',

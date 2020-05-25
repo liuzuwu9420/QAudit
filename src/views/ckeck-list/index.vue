@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <!--部门数据-->
+      <!--检查单数据-->
       <el-col :md="6" :sm="8" :xs="24">
         <div class="head-container">
           <el-input
@@ -25,7 +25,7 @@
           />
         </div>
       </el-col>
-      <!--用户数据-->
+      <!--检查单单位数据-->
       <el-col :md="18" :sm="16" :xs="24">
 
         <el-row :gutter="10" class="mb8">
@@ -286,6 +286,7 @@ export default {
     // 节点单击事件
     handleNodeClick(data) {
       // this.queryParams.deptId = data.id
+      console.log('节点', data)
       this.getList()
     },
     // 取消按钮
@@ -303,7 +304,6 @@ export default {
         checkListType: '',
         checkContent: ''
       }
-      this.resetForm('form')
     },
     /** 搜索按钮操作 */
     handleQuery() {
