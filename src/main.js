@@ -16,9 +16,9 @@ import router from './router'
 import i18n from './lang' // internationalization
 import './icons' // icon
 import './permission' // permission control
-import './utils/error-log' // error log
+// import './utils/error-log' // error log
 
-import * as filters from './filters' // global filters
+// import * as filters from './filters' // global filters
 
 /**
  * If you don't want to use mock-server
@@ -39,10 +39,10 @@ Vue.use(Element, {
 })
 
 // register global utility filters
-Object.keys(filters).forEach(key => {
+/* Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
-
+ */
 Vue.config.productionTip = false
 
 new Vue({

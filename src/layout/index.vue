@@ -57,7 +57,7 @@ export default {
       }
     }
   },
-  /* created() {
+  created() {
     this.timer = setInterval(() => {
       reFreshToken().then((res) => {
         if (res.code === '401') {
@@ -85,7 +85,7 @@ export default {
   beforeDestroy() {
     clearInterval(this.timer)
     this.timer = null
-  }, */
+  },
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })

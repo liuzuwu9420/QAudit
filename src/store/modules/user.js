@@ -1,6 +1,6 @@
-// const jwt = require('jsonwebtoken')
-// import { login, logout } from '@/api/login'
-// import { findEmployByUserName } from '@/api/emplotee'
+const jwt = require('jsonwebtoken')
+import { login, logout } from '@/api/login'
+import { findEmployByUserName } from '@/api/emplotee'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -46,12 +46,12 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    // const { userName, password } = userInfo
+    const { userName, password } = userInfo
     return new Promise((resolve, reject) => {
-      commit('SET_TOKEN', 'token')
+      /* commit('SET_TOKEN', 'token')
       setToken('Token', 'token')
-      resolve(true)
-      /* login({ userName: userName.trim(), password: password }).then(response => {
+      resolve(true) */
+      login({ userName: userName.trim(), password: password }).then(response => {
         if (response.ok === false) {
           resolve(false)
         }
@@ -60,19 +60,19 @@ const actions = {
         resolve(true)
       }).catch(error => {
         reject(error)
-      }) */
+      })
     })
   },
 
   // get user info
   getInfo({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
-      const data = {
+      /* const data = {
         roles: ['admin']
       }
       commit('SET_ROLES', ['admin'])
-      resolve(data)
-      /* commit('SET_JWTOBJ', jwt.decode(state.token))
+      resolve(data) */
+      commit('SET_JWTOBJ', jwt.decode(state.token))
       findEmployByUserName(state.jwtObj.sub).then(response => {
         if (response.code === '200') {
           const data = {
@@ -86,14 +86,14 @@ const actions = {
         }
       }).catch(error => {
         reject(error)
-      }) */
+      })
     })
   },
 
   // user logout
   logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
-      commit('SET_TOKEN', '')
+      /* commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
       removeToken('Token')
       resetRouter()
@@ -102,8 +102,8 @@ const actions = {
       // to fixed https://github.com/PanJiaChen/vue-element-admin/issues/2485
       dispatch('tagsView/delAllViews', null, { root: true })
 
-      resolve()
-      /* logout().then(() => {
+      resolve() */
+      logout().then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         removeToken('Token')
@@ -116,7 +116,7 @@ const actions = {
         resolve()
       }).catch(error => {
         reject(error)
-      }) */
+      })
     })
   },
 

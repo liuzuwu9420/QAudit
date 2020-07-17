@@ -140,7 +140,7 @@ export const asyncRoutes = [
     ]
   },
 
-  /* {
+  {
     path: '/system',
     component: Layout,
     redirect: '/system/user',
@@ -173,9 +173,21 @@ export const asyncRoutes = [
         component: () => import('@/views/system/dict/index.vue'),
         name: 'DataDictionary',
         meta: { title: 'dataDictionary' }
+      },
+      {
+        path: 'tRole',
+        component: () => import('@/views/system/tRole/index.vue'),
+        name: 'TRole',
+        meta: { title: 'tRole' }
+      },
+      {
+        path: 'gen',
+        component: () => import('@/views/system/gen/index.vue'),
+        name: 'Gen',
+        meta: { title: 'gen' }
       }
     ]
-  }, */
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

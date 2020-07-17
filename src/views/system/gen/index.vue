@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
-    <eform ref="form" :is-add="isAdd" />
+    <!-- <eform ref="form"  :is-add="isAdd"></eform>-->
     <!-- <Search :query="query" /> -->
     <div class="head-container">
       <el-input
-        v-model="queryParams.id"
+        v-model="queryParams.tableName"
         clearable
         placeholder="请输入你要搜索的内容"
         style="width: 200px;"
@@ -18,8 +18,20 @@
         icon="el-icon-search"
         @click="toQuery(queryParams)"
       >搜索</el-button>
-      <el-button class="filter-item" size="mini" type="success" icon="el-icon-plus" @click="add">新增</el-button>
+      <!--<el-button class="filter-item" size="mini" type="success" icon="el-icon-plus" @click="">新增</el-button>-->
     </div>
+
+    <!--el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="info"
+          icon="el-icon-upload"
+          size="mini"
+          @click="openImportTable"
+        >导入</el-button>
+      </el-col>
+    </el-row>-->
+
     <!--表格渲染-->
     <el-table
       v-loading="loading"
@@ -28,22 +40,15 @@
       :stripe="true"
       :highlight-current-row="true"
       style="width: 100%;"
-      @selection-change="selectionChange"
     >
       <el-table-column type="index" width="80" />
-      <el-table-column prop="roleDesc" label="角色名称" />
-      <el-table-column prop="code" label="角色编码" />
-      <el-table-column prop="sn" label="排序" />
+      <el-table-column prop="tableName" label="表名" />
+      <el-table-column prop="tableComment" label="表描述" />
+      <el-table-column prop="createTime" label="创建时间" />
+      <el-table-column prop="updateTime" label="更新时间" />
       <el-table-column label="操作" width="130px" align="center" fixed="right">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" icon="el-icon-edit" @click="edit(scope.row.id)" />
-          <el-button
-            slot="reference"
-            type="danger"
-            icon="el-icon-delete"
-            size="mini"
-            @click="subDelete(scope.row.id)"
-          />
+          <el-button size="mini" type="primary" icon="el-icon-edit" @click="handleGenTable(scope.row.tableName)" />
         </template>
       </el-table-column>
     </el-table>
@@ -61,13 +66,13 @@
 
 <script>
 import initData from '@/mixins/initData'
-import { format } from '@/utils/datetime'
-import eform from './form'
-import { del, query, detail } from '@/api/role'
+
+import { query, downLoadZip } from '@/api/gen'
+import { mimeMap, resolveBlob } from '@/utils/zipdownload'
 
 export default {
   name: 'Role',
-  components: { eform },
+  /* components: { eform },*/
   mixins: [initData],
   data() {
     return {
@@ -84,7 +89,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        id: ''
+        tableName: ''
       }
     }
   },
@@ -97,50 +102,24 @@ export default {
     if (to.path === this.toPath) {
       return
     }
-    const _this = this.$refs.form
-    _this.dialog = false
+    // const _this = this.$refs.form
+    // _this.dialog = false
     next()
   },
   methods: {
-    format,
     beforeInit() {
-      this.url = '/sys_mgr/role_mgr/query/pageList/' + this.page + '/' + this.size
+      this.url = '/sys_mgr/gen/list/' + this.page + '/' + this.size
       const sort = 'id,desc'
       this.params = { page: this.page, size: this.size, sort: sort }
       return true
     },
-    subDelete(id) {
-      this.delLoading = true
-      this.$confirm('此操作将永久删除该条数据, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        del(id).then(res => {
-          this.delLoading = false
-          this.dleChangePage()
-          this.init()
-          if (res.code === '200') {
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            })
-          } else {
-            this.$message.error(res.msg)
-          }
-        }).catch(err => {
-          console.log(err)
-          this.delLoading = false
-        })
-      })
-    },
     add() {
       this.isAdd = true
-      this.$refs.form.dialog = true
+      // this.$refs.form.dialog = true
     },
     edit(id) {
       this.isAdd = false
-      const _this = this.$refs.form
+      /* const _this = this.$refs.form
       detail(id).then((res) => {
         if (res.code === '200') {
           _this.form = {
@@ -149,24 +128,19 @@ export default {
             code: res.obj.code,
             sn: res.obj.sn
           }
-          _this.dialog = true
+          // _this.dialog = true
         } else {
           this.$message.error(res.msg)
         }
-      })
+      }) */
     },
-    // 选择切换
-    selectionChange: function(selections) {
-      this.selections = selections
-      this.$emit('selectionChange', { selections: selections })
-    },
-    toQuery(params) {
-      if (!params.id) {
+    toQuery(queryParams) {
+      if (!queryParams.tableName) {
         this.page = 1
         this.init()
         return
       }
-      query(params).then((res) => {
+      query(queryParams.tableName).then((res) => {
         if (res.code === '200') {
           this.data = res.obj
           this.total = res.obj.length
@@ -176,33 +150,44 @@ export default {
         }
         this.query = ''
       })
+    },
+    /** 生成代码操作 */
+    handleGenTable(tableName) {
+      if (tableName === '') {
+        this.$message({ showClose: true, message: '请选择要生成的数据', type: 'error' })
+        return
+      }
+      // downLoadZip('/sys_mgr/gen/batchGenCode/' + tableName, 'xy')
+      downLoadZip(tableName).then(res => {
+        resolveBlob(res, mimeMap.zip)
+      })
     }
   }
 }
 </script>
 
 <style lang="scss">
-.demo-table-expand {
-  font-size: 0;
-}
-.demo-table-expand label {
-  width: 70px;
-  color: #99a9bf;
-}
-.demo-table-expand .el-form-item {
-  margin-right: 0;
-  margin-bottom: 0;
-  width: 100%;
-}
-.demo-table-expand .el-form-item__content {
-  font-size: 12px;
-}
-.filter-item {
-  > .el-input__inner {
-    height: 32px !important;
+  .demo-table-expand {
+    font-size: 0;
   }
-}
-.head-container {
-  margin-bottom: 20px;
-}
+  .demo-table-expand label {
+    width: 70px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 100%;
+  }
+  .demo-table-expand .el-form-item__content {
+    font-size: 12px;
+  }
+  .filter-item {
+    > .el-input__inner {
+      height: 32px !important;
+    }
+  }
+  .head-container {
+    margin-bottom: 20px;
+  }
 </style>

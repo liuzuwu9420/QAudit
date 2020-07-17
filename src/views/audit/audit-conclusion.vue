@@ -85,30 +85,31 @@
             <el-table-column label="操作">
               <template v-slot="{row}">
                 <el-button-group>
-                  <el-button
-                    type="success"
-                    icon="el-icon-edit"
-                    size="mini"
-                    @click="changeRecording(row)"
-                  >
-                    编辑
-                  </el-button>
-                  <el-button
-                    type="warning"
-                    icon="el-icon-circle-close"
-                    size="mini"
-                    @click="rejectRecording(row)"
-                  >
-                    驳回
-                  </el-button>
-                  <el-button
-                    type="danger"
-                    icon="el-icon-delete"
-                    size="mini"
-                    @click="deleteRecording(row)"
-                  >
-                    删除
-                  </el-button>
+                  <!-- 查看详情 -->
+                  <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
+                    <el-button
+                      type="success"
+                      icon="el-icon-edit"
+                      size="mini"
+                      @click="changeRecording(row)"
+                    />
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="驳回" placement="top-end">
+                    <el-button
+                      type="warning"
+                      size="mini"
+                      icon="el-icon-circle-close"
+                      @click="rejectRecording(row)"
+                    />
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
+                    <el-button
+                      type="danger"
+                      size="mini"
+                      icon="el-icon-delete"
+                      @click="deleteRecording(row)"
+                    />
+                  </el-tooltip>
                 </el-button-group>
               </template>
             </el-table-column>
@@ -153,30 +154,31 @@
             <el-table-column label="操作" min-width="100px" fixed="right">
               <template v-slot="{row}">
                 <el-button-group>
-                  <el-button
-                    type="success"
-                    icon="el-icon-edit"
-                    size="mini"
-                    @click="changeProblem(row)"
-                  >
-                    编辑
-                  </el-button>
-                  <el-button
-                    type="warning"
-                    icon="el-icon-circle-close"
-                    size="mini"
-                    @click="rejectProblem(row)"
-                  >
-                    驳回
-                  </el-button>
-                  <el-button
-                    type="danger"
-                    icon="el-icon-delete"
-                    size="mini"
-                    @click="deleteProblem(row)"
-                  >
-                    删除
-                  </el-button>
+                  <!-- 查看详情 -->
+                  <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
+                    <el-button
+                      type="success"
+                      icon="el-icon-edit"
+                      size="mini"
+                      @click="changeProblem(row)"
+                    />
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="驳回" placement="top-end">
+                    <el-button
+                      type="warning"
+                      size="mini"
+                      icon="el-icon-circle-close"
+                      @click="rejectProblem(row)"
+                    />
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
+                    <el-button
+                      type="danger"
+                      size="mini"
+                      icon="el-icon-delete"
+                      @click="deleteProblem(row)"
+                    />
+                  </el-tooltip>
                 </el-button-group>
               </template>
             </el-table-column>

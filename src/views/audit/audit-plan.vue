@@ -214,9 +214,8 @@ export default {
         this.taskData = []
         return
       }
-      if ((typeof val[0]) === 'string') {
-        val[0] = new Date(val[0])
-        val[1] = new Date(val[1])
+      if ((typeof val) === 'object') {
+        val = `${new Date(val).getFullYear()}`
       }
       // this.resetPage()
     }

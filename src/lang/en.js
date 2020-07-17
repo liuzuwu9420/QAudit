@@ -1,17 +1,20 @@
 export default {
   route: {
     dashboard: 'Dashboard',
-    audit: 'Audit',
+    audit: 'Audit Manage',
     auditPlan: 'Audit Plan',
     auditTask: 'Audit Task',
     auditConclusion: 'Audit Conclusion',
     checkList: 'Check Manage',
     maintain: 'Maintain Manage',
+    problem: 'My Problem',
     systemManage: 'System Manage',
     userManage: 'User Manage',
     rolesManage: 'Roles Manage',
     authorityManage: 'Authority Manage',
-    dataDictionary: 'Data Dictionary'
+    dataDictionary: 'Data Dictionary',
+    tRole: 'Roles Manage ceshi',
+    gen: 'Generate code'
   },
   navbar: {
     dashboard: 'Dashboard',

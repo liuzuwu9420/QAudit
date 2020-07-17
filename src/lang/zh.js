@@ -1,17 +1,20 @@
 export default {
   route: {
     dashboard: '首页',
-    audit: '审核',
+    audit: '审核管理',
     auditPlan: '审核计划',
     auditTask: '审核任务',
     auditConclusion: '审核结论',
     checkList: '检查单管理',
     maintain: '供应商管理',
+    problem: '我的问题',
     systemManage: '系统管理',
     userManage: '员工管理',
     rolesManage: '角色管理',
     authorityManage: '权限管理',
-    dataDictionary: '数据字典'
+    dataDictionary: '数据字典',
+    tRole: '角色管理测试',
+    gen: '生成代码'
   },
   navbar: {
     dashboard: '首页',

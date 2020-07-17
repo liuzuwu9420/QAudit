@@ -1,8 +1,8 @@
 {
-  "name": "vue-element-admin",
-  "version": "4.2.1",
-  "description": "A magical vue admin. An out-of-box UI solution for enterprise applications. Newest development stack of vue. Lots of awesome features",
-  "author": "Pan <panfree23@gmail.com>",
+  "name": "q-audit",
+  "version": "1.1.1",
+  "description": "",
+  "author": "liuzuwu <liuzuwu9420@icloud.com>",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve --open",
@@ -37,10 +37,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PanJiaChen/vue-element-admin.git"
+    "url": "git+https://github.com/liuzuwu9420/QAudit.git"
   },
   "bugs": {
-    "url": "https://github.com/PanJiaChen/vue-element-admin/issues"
+    "url": "https://github.com/liuzuwu9420/QAudit.git/issues"
   },
   "dependencies": {
     "axios": "0.18.1",
@@ -61,7 +61,6 @@
     "pinyin": "2.9.0",
     "screenfull": "4.2.0",
     "vue": "2.6.10",
-    "vue-count-to": "1.0.13",
     "vue-i18n": "7.3.2",
     "vue-router": "3.0.2",
     "vue-splitpane": "^1.0.6",
@@ -88,7 +87,6 @@
     "html-webpack-plugin": "3.2.0",
     "husky": "1.3.1",
     "lint-staged": "8.1.5",
-    "mockjs": "1.0.1-beta3",
     "node-sass": "^4.9.0",
     "plop": "2.3.0",
     "runjs": "^4.3.2",

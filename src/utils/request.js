@@ -1,12 +1,13 @@
 import axios from 'axios'
+import { Message } from 'element-ui'
 import store from '@/store'
-// import { getToken } from '@/utils/auth'
+import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 15000 // request timeout
 })
 
 // request interceptor
@@ -18,7 +19,7 @@ service.interceptors.request.use(
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      // config.headers.Authorization = `xytoken_${getToken('Token')}`
+      config.headers.Authorization = `xytoken_${getToken('Token')}`
     }
     return config
   },
@@ -33,23 +34,17 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     const res = response.data
-    if (response.status !== 200) {
-      if (response.status === 201 || response.status === 202) {
-        return res
-      } else {
-        return Promise.reject(res)
-      }
+    if (response.config.responseType === 'blob') {
+      return response
     }
     return res
   }, (error) => {
-    if (error.response) {
-      if (error.response.status === 401) {
-        return false
-      }
-      return Promise.reject(error)
-    } else {
-      return Promise.reject(error)
-    }
+    Message({
+      message: error.message,
+      type: 'error',
+      duration: 5 * 1000
+    })
+    return Promise.reject(error)
   }
 )
 export default service
