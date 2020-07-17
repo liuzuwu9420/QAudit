@@ -3,21 +3,54 @@
     <eform ref="form" :is-add="isAdd" :role-options="roleOptions" />
     <!-- <Search :query="query" /> -->
     <div class="head-container">
-      <el-input
-        v-model="query"
-        clearable
-        placeholder="请输入你要搜索的内容"
-        style="width: 200px;"
-        class="filter-item"
-      />
-      <el-button
-        class="filter-item"
-        size="mini"
-        type="success"
-        icon="el-icon-search"
-        @click="toQuery(query)"
-      >搜索</el-button>
-      <el-button class="filter-item" size="mini" type="success" icon="el-icon-plus" @click="add">新增</el-button>
+      <el-form ref="queryForm" :model="queryParams" :inline="true">
+        <el-form-item label="员工名称" prop="userDesc" class="form-item-self">
+          <el-input
+            v-model="queryParams.userDesc"
+            clearable
+            placeholder="请输入员工名称"
+            style="width: 200px;"
+            class="filter-item"
+            @keyup.enter.native="toQuery()"
+          />
+        </el-form-item>
+        <el-form-item label="用户名" prop="userName" class="form-item-self">
+          <el-input
+            v-model="queryParams.userName"
+            clearable
+            placeholder="请输入用户名"
+            style="width: 200px;"
+            class="filter-item"
+            @keyup.enter.native="toQuery()"
+          />
+        </el-form-item>
+        <el-form-item label="手机" prop="phone" class="form-item-self">
+          <el-input
+            v-model="queryParams.phone"
+            clearable
+            placeholder="请输入手机号"
+            style="width: 200px;"
+            class="filter-item"
+            @keyup.enter.native="toQuery()"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            class="filter-item"
+            size="mini"
+            type="success"
+            icon="el-icon-search"
+            @click="toQuery()"
+          >搜索</el-button>
+          <el-button
+            class="filter-item"
+            size="mini"
+            type="success"
+            icon="el-icon-plus"
+            @click="add"
+          >新增</el-button>
+        </el-form-item>
+      </el-form>
     </div>
     <!--表格渲染-->
     <el-table
@@ -29,7 +62,6 @@
       style="width: 100%;"
       @selection-change="selectionChange"
     >
-      <el-table-column type="index" width="50" />
       <el-table-column prop="userDesc" label="员工名称" />
       <el-table-column prop="userName" label="用户名" />
       <el-table-column prop="phone" label="手机" />
@@ -53,31 +85,31 @@
       </el-table-column>
     </el-table>
     <!--分页组件-->
-    <el-pagination
-      :total="total"
-      :current-page="page"
-      style="margin-top: 8px;float: right"
-      layout="total, prev, pager, next, sizes"
-      @size-change="sizeChange"
-      @current-change="pageChange"
+    <pagination
+      v-show="page.total>0"
+      :total="page.total"
+      :page.sync="page.currentPage"
+      :limit.sync="page.pageSize"
+      @pagination="getList"
     />
   </div>
 </template>
 
 <script>
 import jwtDecode from 'jwt-decode'
-import initData from '@/mixins/initData'
-import { format } from '@/utils/datetime'
 import { getToken } from '@/utils/auth'
 import eform from './form'
-import { del, queryLikeList, detail, findEmployByUserName } from '@/api/emplotee'
+import Pagination from '@/components/Pagination'
+import { del, query, detail, findEmployByUserName } from '@/api/Employee'
 import { getRoleList } from '@/api/role'
 export default {
-  name: 'Emplotee',
-  components: { eform },
-  mixins: [initData],
+  name: 'UserManage',
+  components: { eform, Pagination },
   data() {
     return {
+      loading: true,
+      data: [],
+      isAdd: false,
       delLoading: false,
       showBatchDelete: { // 是否显示操作组件
         type: Boolean,
@@ -90,13 +122,21 @@ export default {
       selections: [], // 列表选中列
       roleOptions: [],
       isSuperAdmin: false,
-      userInfo: {}
+      userInfo: {},
+      page: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      queryParams: {
+        userDesc: undefined,
+        userName: undefined,
+        phone: undefined
+      }
     }
   },
   created() {
-    this.$nextTick(() => {
-      this.init()
-    })
+    this.getList()
     this.getRole()
 
     const userToken = getToken('Token')
@@ -124,12 +164,25 @@ export default {
     next()
   },
   methods: {
-    format,
-    beforeInit() {
-      this.url = '/sys_mgr/staff_mgr/query/pageList/' + this.page + ' / ' + this.size
-      const sort = 'id,desc'
-      this.params = { page: this.page, size: this.size, sort: sort }
-      return true
+    getList() {
+      this.loading = true
+      let params = {}
+      params = this.queryParams
+      params.pageNum = this.page.currentPage
+      params.pageSize = this.page.pageSize
+      query(params).then(res => {
+        if (res.code === '200') {
+          this.data = res.obj
+          this.page.total = Number(res.total)
+          // // this.init()
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        this.loading = false
+      })
     },
     subDelete(id) {
       this.delLoading = true
@@ -148,7 +201,7 @@ export default {
             this.$message.error(res.msg)
           }
           this.delLoading = false
-          this.dleChangePage()
+          // this.dleChangePage()
           this.init()
         }).catch(err => {
           console.log(err)
@@ -193,21 +246,8 @@ export default {
       this.$emit('selectionChange', { selections: selections })
     },
     toQuery(name) {
-      if (!name) {
-        this.page = 1
-        this.init()
-        return
-      }
-      queryLikeList(name).then((res) => {
-        if (res.code === '200') {
-          this.data = res.obj
-          this.total = res.obj.length
-          // // this.init()
-        } else {
-          this.$message.error(res.msg)
-        }
-        this.query = ''
-      })
+      this.page.currentPage = 1
+      this.getList()
     },
     // 获取角色列表
     getRole() {
@@ -241,8 +281,5 @@ export default {
   > .el-input__inner {
     height: 32px !important;
   }
-}
-.head-container {
-  margin-bottom: 20px;
 }
 </style>

@@ -141,7 +141,7 @@ export default {
         if (this.isActive(view)) {
           this.toLastView(visitedViews, view)
         }
-      })
+      }).catch((e) => console.log(e))
     },
     closeOthersTags() {
       this.$router.push(this.selectedTag)

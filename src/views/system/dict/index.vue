@@ -2,37 +2,34 @@
   <div class="app-container">
     <eform ref="form" :is-add="isAdd" :data="parentIdList" />
     <!-- <Search :query="query" /> -->
-    <div class="head-container">
-      <!-- <el-input
-        v-model="query"
+    <div class="head">
+      <el-input
+        v-model="queryParams.dicCode"
         clearable
-        placeholder="请输入你要搜索的内容"
-        style="width: 200px;"
+        placeholder="请输入字典编码"
+        style="width: 200px; margin-right: 10px;"
         class="filter-item"
-        @keyup.enter.native="toQuery(query)"
+        @keyup.enter.native="toQuery()"
       />
       <el-button
         class="filter-item"
         size="mini"
         type="success"
         icon="el-icon-search"
-        @click="toQuery(query)"
-      >搜索</el-button>-->
+        @click="toQuery()"
+      >搜索</el-button>
       <el-button class="filter-item" size="mini" type="success" icon="el-icon-plus" @click="add">新增</el-button>
     </div>
     <!--表格渲染-->
     <el-table
       v-loading="loading"
       :data="data"
-      size="small"
       :stripe="true"
       :highlight-current-row="true"
       style="width: 100%;"
       row-key="key"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-      @selection-change="selectionChange"
     >
-      <el-table-column type="index" width="80" />
       <el-table-column prop="name" label="字典描述" />
       <el-table-column prop="dicCode" label="字典编码">
         <template slot-scope="scope">
@@ -55,28 +52,29 @@
       </el-table-column>
     </el-table>
     <!--分页组件-->
-    <el-pagination
-      :total="total"
-      :current-page="page"
-      style="margin-top: 8px;float: right"
-      layout="total, prev, pager, next, sizes"
-      @size-change="sizeChange"
-      @current-change="pageChange"
+    <pagination
+      v-show="page.total>0"
+      :total="page.total"
+      :page.sync="page.currentPage"
+      :limit.sync="page.pageSize"
+      @pagination="getList"
     />
   </div>
 </template>
 
 <script>
-import initData from '@/mixins/initData'
 import eform from './form'
-import { del, detail, getPageList } from '@/api/dict'
+import Pagination from '@/components/Pagination'
+import { del, detail, query } from '@/api/dict'
 
 export default {
-  name: 'Role',
-  components: { eform },
-  mixins: [initData],
+  name: 'DataDictionary',
+  components: { eform, Pagination },
   data() {
     return {
+      loading: true,
+      data: [],
+      isAdd: false,
       delLoading: false,
       showBatchDelete: { // 是否显示操作组件
         type: Boolean,
@@ -87,13 +85,19 @@ export default {
         default: true
       },
       selections: [], // 列表选中列
-      parentIdList: []
+      parentIdList: [],
+      page: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      queryParams: {
+        dicCode: undefined
+      }
     }
   },
   created() {
-    this.$nextTick(() => {
-      this.init()
-    })
+    this.getList()
     this.getParentId()
   },
   beforeRouteLeave: function(to, from, next) {
@@ -105,11 +109,25 @@ export default {
     next()
   },
   methods: {
-    beforeInit() {
-      this.url = '/sys_mgr/sys_dic/query/pageList/' + this.page + '/' + this.size
-      const sort = 'id,desc'
-      this.params = { page: this.page, size: this.size, sort: sort }
-      return true
+    getList() {
+      this.loading = true
+      let params = {}
+      params = this.queryParams
+      params.pageNum = this.page.currentPage
+      params.pageSize = this.page.pageSize
+      query(params).then(res => {
+        if (res.code === '200') {
+          this.data = res.obj
+          this.page.total = Number(res.total)
+          // // this.init()
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        this.loading = false
+      })
     },
     subDelete(row) {
       if (row.children) {
@@ -131,7 +149,7 @@ export default {
             this.delLoading = false
             this.parentIdList = []
             this.getParentId()
-            this.dleChangePage()
+            // this.dleChangePage()
             this.init()
           }).catch(err => {
             console.log(err)
@@ -198,23 +216,16 @@ export default {
       this.selections = selections
       this.$emit('selectionChange', { selections: selections })
     },
-    /* toQuery(id) {
-      if (!id) {
-        this.page = 1
-        this.init()
-        return
-      }
-      query(id).then((res) => {
-        if (res.code === '200') {
-          this.data = res.obj
-          // // this.init()
-        } else {
-          this.$message.error(res.msg)
-        }
-      })
-    }, */
+    toQuery() {
+      this.page.currentPage = 1
+      this.getList()
+    },
     getParentId() {
-      getPageList(1, 100).then((res) => {
+      const params = {
+        pageNum: 1,
+        pageSize: 1000
+      }
+      query(params).then((res) => {
         const data = res.obj
         const parent = []
         let obj = {}
@@ -261,8 +272,5 @@ export default {
   > .el-input__inner {
     height: 32px !important;
   }
-}
-.head-container {
-  margin-bottom: 20px;
 }
 </style>

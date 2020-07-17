@@ -15,9 +15,30 @@
 
         <lang-select class="right-menu-item hover-effect" />
 
+        <!-- <div class="right-menu-item hover-effect">
+          <el-tooltip content="退出登录" placement="bottom" effect="light">
+            <svg-icon class-name="logout-icon" icon-class="logout" @click.native="logout" />
+          </el-tooltip>
+        </div> -->
+        <el-dropdown trigger="click" class="right-menu-item hover-effect">
+          <div>
+            <svg-icon class-name="logout-icon" icon-class="logout" />
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <router-link to="/password">
+              <el-dropdown-item>
+                {{ $t('navbar.password') }}
+              </el-dropdown-item>
+            </router-link>
+            <el-dropdown-item divided @click.native="logout">
+              <span style="display:block;">{{ $t('navbar.logOut') }}</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+
       </template>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+      <!-- <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="userImgUrl" class="user-avatar">
           <i class="el-icon-caret-bottom" />
@@ -32,7 +53,7 @@
             <span style="display:block;">{{ $t('navbar.logOut') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
+      </el-dropdown> -->
     </div>
   </div>
 </template>
@@ -129,6 +150,12 @@ export default {
 
         &:hover {
           background: rgba(0, 0, 0, .025)
+        }
+      }
+
+      .logout-icon {
+        &:hover {
+          color: #ff0101;
         }
       }
     }

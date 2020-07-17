@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { add, modify } from '@/api/emplotee.js'
+import { add, modify } from '@/api/Employee'
 import { re } from '@/utils/config-re'
 
 export default {

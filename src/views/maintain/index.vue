@@ -1,33 +1,79 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-        >删除</el-button>
-      </el-col>
-    </el-row>
+    <div class="head">
+      <el-form ref="queryForm" :model="queryParams" :inline="true" label-width="auto">
+        <el-form-item label="供应商名称/航站" prop="externalDeptName">
+          <el-input
+            v-model="queryParams.externalDeptName"
+            placeholder="请输入供应商名称/航站"
+            clearable
+            size="small"
+            style="width: 240px"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item label="联系人" prop="contact">
+          <el-input
+            v-model="queryParams.contact"
+            placeholder="请输入联系人"
+            clearable
+            size="small"
+            style="width: 240px"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item label="手机号" prop="mobile">
+          <el-input
+            v-model="queryParams.mobile"
+            placeholder="请输入手机号"
+            clearable
+            size="small"
+            style="width: 240px"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item label="航站类别" prop="terminalCategory">
+          <el-input
+            v-model="queryParams.terminalCategory"
+            placeholder="请输入航站类别"
+            clearable
+            size="small"
+            style="width: 240px"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+          <!-- <el-button
+            type="success"
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+          >新增</el-button>
+          <el-button
+            type="warning"
+            icon="el-icon-edit"
+            size="mini"
+            :disabled="single"
+            @click="handleUpdate"
+          >修改</el-button>
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+            :disabled="multiple"
+            @click="handleDelete"
+          >删除</el-button> -->
+          <el-button
+            class="filter-item"
+            size="mini"
+            type="info"
+            icon="el-icon-download"
+            @click="handleExport"
+          >导出</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
 
     <el-table
       v-loading="loading"
@@ -35,7 +81,7 @@
       show-overflow-tooltip
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="40" align="center" />
+      <!-- <el-table-column type="selection" width="40" align="center" /> -->
       <el-table-column label="类型" align="center" prop="externalType" width="80" />
       <el-table-column label="审核一级分类" align="center" prop="auditCategory1" />
       <el-table-column label="审核二级分类" align="center" prop="auditCategory2" />
@@ -126,7 +172,7 @@
 import Pagination from '@/components/Pagination'
 
 export default {
-  name: 'MaintainList',
+  name: 'Maintain',
   components: {
     Pagination
   },
@@ -140,6 +186,13 @@ export default {
       single: true,
       // 非多个禁用
       multiple: true,
+      // 查询参数
+      queryParams: {
+        externalDeptName: undefined,
+        terminalCategory: undefined,
+        contact: undefined,
+        mobile: undefined
+      },
       // 用户表格数据
       maintainList: [
         {
@@ -194,9 +247,8 @@ export default {
       // 分页参数
       page: {
         currentPage: 1,
-        pageCount: 1,
         pageSize: 10,
-        total: 1
+        total: 2
       }
     }
   },
@@ -218,6 +270,18 @@ export default {
     getList() {
 
     },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.page.currentPage = 1
+      this.getList()
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.page.currentPage = 1
+      this.page.pageSize = 10
+      this.resetForm('queryForm')
+      this.handleQuery()
+    },
     // 取消按钮
     cancel() {
       this.open = false
@@ -238,15 +302,6 @@ export default {
         email: '',
         mobile: ''
       }
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.page.pageCount = 1
-      this.getList()
-    },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.handleQuery()
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -285,6 +340,23 @@ export default {
         this.getList()
         this.msgSuccess('删除成功')
       }).catch(function() {})
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      // const queryParams = this.queryParams
+      this.$confirm('是否确认导出所有数据项?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(function() {
+          console.log('success')
+          // return exportData(queryParams)
+        })
+        /* .then(response => {
+          this.download(response.obj)
+        }) */
+        .catch(function() {})
     }
   }
 }

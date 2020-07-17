@@ -20,10 +20,20 @@ const mutations = {
   },
 
   DEL_VISITED_VIEW: (state, view) => {
-    for (const [i, v] of state.visitedViews.entries()) {
-      if (v.path === view.path) {
-        state.visitedViews.splice(i, 1)
-        break
+    if (window.ActiveXObject || 'ActiveXObject' in window) {
+      const nodeArr = Array.prototype.slice.call(state.visitedViews)
+      nodeArr.some((item, index) => {
+        if (item.path === view.path) {
+          state.visitedViews.splice(index, 1)
+          return true
+        }
+      })
+    } else {
+      for (const [i, v] of state.visitedViews.entries()) {
+        if (v.path === view.path) {
+          state.visitedViews.splice(i, 1)
+          break
+        }
       }
     }
   },

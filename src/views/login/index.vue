@@ -1,8 +1,17 @@
 <template>
   <div ref="box" class="container">
+    <div id="particlesId" class="particlesId" />
     <!-- 卡片 element-ui 组件 -->
     <el-card class="my-card">
-      <span class="title">后台管理系统</span>
+      <div style="text-align: center">
+        <h1 class="my-card-title">
+          <strong>
+            <img src="../../assets/login_images/loginLogo.png">
+          </strong>
+          <em>Management System</em>
+        </h1>
+      </div>
+      <!-- <span class="title">后台管理系统</span> -->
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" status-icon>
         <el-form-item prop="userName">
           <el-input v-model="loginForm.userName" placeholder="请输入用户名" clearable>
@@ -44,6 +53,9 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
+import particles from 'particles.js'
+import particlesConfig from '../../assets/particles'
 import { validUsername } from '@/utils/validate'
 
 export default {
@@ -69,8 +81,12 @@ export default {
         password: 'admin123'
       },
       loginRules: {
-        userName: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        userName: [
+          { required: true, trigger: 'blur', validator: validateUsername }
+        ],
+        password: [
+          { required: true, trigger: 'blur', validator: validatePassword }
+        ]
       },
       dialogVisible: false,
       isChecked: true,
@@ -100,6 +116,7 @@ export default {
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
+    this.createParticles()
   },
   destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)
@@ -109,17 +126,21 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
-            .then((res) => {
+          this.$store
+            .dispatch('user/login', this.loginForm)
+            .then(res => {
               if (res) {
-                this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+                this.$router.push({
+                  path: this.redirect || '/',
+                  query: this.otherQuery
+                })
                 this.loading = false
               } else {
                 this.$message.error('用户名或密码输入错误！！！')
                 this.loading = false
               }
             })
-            .catch((err) => {
+            .catch(err => {
               console.log(err)
               this.loading = false
             })
@@ -128,6 +149,11 @@ export default {
           return false
         }
       })
+    },
+    createParticles() {
+      // 参数1 ，为div节点的id , 参数2，为particles.json配置文件
+      // eslint-disable-next-line no-undef
+      particlesJS('particlesId', particlesConfig)
     },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
@@ -161,20 +187,49 @@ export default {
 
 <style scoped lang='scss'>
 .container {
-  background: url('../../assets/login_images/bg1.jpg') no-repeat center / cover;
+  // background: url('../../assets/login_images/bg1.jpg') no-repeat center / cover;
   width: 100%;
   height: 100%;
   position: absolute;
   left: 0;
   top: 0;
+  .particlesId{
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: 50% 50%;
+}
   .my-card {
     width: 460px;
-    height: 400px;
+    height: auto;
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     padding: 0 20px;
+    overflow: hidden;
+    margin: 0% auto 0 auto;
+    box-shadow: 0 -15px 30px #0d957a;
+    border-radius: 5px;
+    border: none;
+    background: none;
+    z-index: 1000;
+    .my-card-title {
+      font-size: 25px;
+      font-weight: bold;
+      text-align: center;
+      color: #45bda6;
+      text-shadow: 0 0 1px #0e947a;
+      margin-bottom: 15px;
+      em {
+        display: block;
+        font-size: 16px;
+        margin-top: 8px;
+      }
+    }
     .title {
       display: inline-block;
       width: 100%;
@@ -228,7 +283,8 @@ export default {
   margin-right: 20px;
 }
 .pwd {
-  background: url('../../assets/login_images/icon/password.png') no-repeat center;
+  background: url('../../assets/login_images/icon/password.png') no-repeat
+    center;
 }
 .el-icon-user-solid:before {
   font-size: 26px;

@@ -3,21 +3,21 @@
     <!-- <eform ref="form"  :is-add="isAdd"></eform>-->
     <!-- <Search :query="query" /> -->
     <div class="head-container">
-      <el-input
+      <!-- <el-input
         v-model="queryParams.tableName"
         clearable
-        placeholder="请输入你要搜索的内容"
+        placeholder="请输入表名"
         style="width: 200px;"
         class="filter-item"
-        @keyup.enter.native="toQuery(queryParams)"
+        @keyup.enter.native="toQuery()"
       />
       <el-button
         class="filter-item"
         size="mini"
         type="success"
         icon="el-icon-search"
-        @click="toQuery(queryParams)"
-      >搜索</el-button>
+        @click="toQuery()"
+      >搜索</el-button> -->
       <!--<el-button class="filter-item" size="mini" type="success" icon="el-icon-plus" @click="">新增</el-button>-->
     </div>
 
@@ -41,41 +41,40 @@
       :highlight-current-row="true"
       style="width: 100%;"
     >
-      <el-table-column type="index" width="80" />
       <el-table-column prop="tableName" label="表名" />
       <el-table-column prop="tableComment" label="表描述" />
       <el-table-column prop="createTime" label="创建时间" />
       <el-table-column prop="updateTime" label="更新时间" />
       <el-table-column label="操作" width="130px" align="center" fixed="right">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" icon="el-icon-edit" @click="handleGenTable(scope.row.tableName)" />
+          <el-button size="mini" type="primary" icon="el-icon-download" @click="handleGenTable(scope.row.tableName)" />
         </template>
       </el-table-column>
     </el-table>
     <!--分页组件-->
-    <el-pagination
-      :total="total"
-      :current-page="page"
-      style="margin-top: 8px;float: right"
-      layout="total, prev, pager, next, sizes"
-      @size-change="sizeChange"
-      @current-change="pageChange"
+    <pagination
+      v-show="page.total>0"
+      :total="page.total"
+      :page.sync="page.currentPage"
+      :limit.sync="page.pageSize"
+      @pagination="getList"
     />
   </div>
 </template>
 
 <script>
-import initData from '@/mixins/initData'
-
+import Pagination from '@/components/Pagination'
 import { query, downLoadZip } from '@/api/gen'
 import { mimeMap, resolveBlob } from '@/utils/zipdownload'
 
 export default {
-  name: 'Role',
-  /* components: { eform },*/
-  mixins: [initData],
+  name: 'Gen',
+  components: { Pagination },
   data() {
     return {
+      loading: true,
+      data: [],
+      isAdd: false,
       delLoading: false,
       showBatchDelete: { // 是否显示操作组件
         type: Boolean,
@@ -86,17 +85,18 @@ export default {
         default: true
       },
       selections: [], // 列表选中列
-      queryParams: {
-        pageNum: 1,
+      page: {
+        currentPage: 1,
         pageSize: 10,
-        tableName: ''
+        total: 0
+      },
+      queryParams: {
+        tableName: undefined
       }
     }
   },
   created() {
-    this.$nextTick(() => {
-      this.init()
-    })
+    this.getList()
   },
   beforeRouteLeave: function(to, from, next) {
     if (to.path === this.toPath) {
@@ -107,11 +107,25 @@ export default {
     next()
   },
   methods: {
-    beforeInit() {
-      this.url = '/sys_mgr/gen/list/' + this.page + '/' + this.size
-      const sort = 'id,desc'
-      this.params = { page: this.page, size: this.size, sort: sort }
-      return true
+    getList() {
+      this.loading = true
+      const params = {
+        pageNum: this.page.currentPage,
+        pageSize: this.page.pageSize
+      }
+      query(params).then(res => {
+        if (res.code === '200') {
+          this.data = res.obj
+          this.page.total = Number(res.total)
+          // // this.init()
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        this.loading = false
+      })
     },
     add() {
       this.isAdd = true
@@ -134,23 +148,10 @@ export default {
         }
       }) */
     },
-    toQuery(queryParams) {
-      if (!queryParams.tableName) {
-        this.page = 1
-        this.init()
-        return
-      }
-      query(queryParams.tableName).then((res) => {
-        if (res.code === '200') {
-          this.data = res.obj
-          this.total = res.obj.length
-          // // this.init()
-        } else {
-          this.$message.error(res.msg)
-        }
-        this.query = ''
-      })
-    },
+    /* toQuery() {
+      this.page.currentPage = 1
+      this.getList()
+    }, */
     /** 生成代码操作 */
     handleGenTable(tableName) {
       if (tableName === '') {
@@ -186,8 +187,5 @@ export default {
     > .el-input__inner {
       height: 32px !important;
     }
-  }
-  .head-container {
-    margin-bottom: 20px;
   }
 </style>

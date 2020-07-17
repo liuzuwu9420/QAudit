@@ -30,10 +30,11 @@ export const detail = (id) => {
     method: 'get'
   })
 }
-// 分页
-export const getPageList = (page, size) => {
+// 模糊查询
+export const query = (params) => {
   return request({
-    url: `/sys_mgr/sys_dic/query/pageList/${page}/${size}`,
-    method: 'get'
+    url: '/sys_mgr/sys_dic/query/likeList',
+    method: 'get',
+    params
   })
 }

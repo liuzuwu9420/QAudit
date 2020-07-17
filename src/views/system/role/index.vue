@@ -3,22 +3,44 @@
     <eform ref="form" :is-add="isAdd" />
     <!-- <Search :query="query" /> -->
     <div class="head-container">
-      <el-input
-        v-model="queryParams.id"
-        clearable
-        placeholder="请输入你要搜索的内容"
-        style="width: 200px;"
-        class="filter-item"
-        @keyup.enter.native="toQuery(queryParams)"
-      />
-      <el-button
-        class="filter-item"
-        size="mini"
-        type="success"
-        icon="el-icon-search"
-        @click="toQuery(queryParams)"
-      >搜索</el-button>
-      <el-button class="filter-item" size="mini" type="success" icon="el-icon-plus" @click="add">新增</el-button>
+      <el-form ref="queryForm" :model="queryParams" :inline="true">
+        <el-form-item label="角色编码" prop="code" class="form-item-self">
+          <el-input
+            v-model="queryParams.code"
+            clearable
+            placeholder="请输入角色编码"
+            style="width: 200px;"
+            class="filter-item"
+            @keyup.enter.native="toQuery()"
+          />
+        </el-form-item>
+        <el-form-item label="角色名称" prop="roleDesc" class="form-item-self">
+          <el-input
+            v-model="queryParams.roleDesc"
+            clearable
+            placeholder="请输入角色名称"
+            style="width: 200px;"
+            class="filter-item"
+            @keyup.enter.native="toQuery()"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            class="filter-item"
+            size="mini"
+            type="success"
+            icon="el-icon-search"
+            @click="toQuery()"
+          >搜索</el-button>
+          <el-button
+            class="filter-item"
+            size="mini"
+            type="success"
+            icon="el-icon-plus"
+            @click="add"
+          >新增</el-button>
+        </el-form-item>
+      </el-form>
     </div>
     <!--表格渲染-->
     <el-table
@@ -30,7 +52,7 @@
       style="width: 100%;"
       @selection-change="selectionChange"
     >
-      <el-table-column type="index" width="80" />
+      <el-table-column prop="id" label="ID" />
       <el-table-column prop="roleDesc" label="角色名称" />
       <el-table-column prop="code" label="角色编码" />
       <el-table-column prop="sn" label="排序" />
@@ -48,29 +70,29 @@
       </el-table-column>
     </el-table>
     <!--分页组件-->
-    <el-pagination
-      :total="total"
-      :current-page="page"
-      style="margin-top: 8px;float: right"
-      layout="total, prev, pager, next, sizes"
-      @size-change="sizeChange"
-      @current-change="pageChange"
+    <pagination
+      v-show="page.total>0"
+      :total="page.total"
+      :page.sync="page.currentPage"
+      :limit.sync="page.pageSize"
+      @pagination="getList"
     />
   </div>
 </template>
 
 <script>
-import initData from '@/mixins/initData'
-import { format } from '@/utils/datetime'
 import eform from './form'
+import Pagination from '@/components/Pagination'
 import { del, query, detail } from '@/api/role'
 
 export default {
-  name: 'Role',
-  components: { eform },
-  mixins: [initData],
+  name: 'RolesManage',
+  components: { eform, Pagination },
   data() {
     return {
+      loading: true,
+      data: [],
+      isAdd: false,
       delLoading: false,
       showBatchDelete: { // 是否显示操作组件
         type: Boolean,
@@ -81,17 +103,19 @@ export default {
         default: true
       },
       selections: [], // 列表选中列
-      queryParams: {
-        pageNum: 1,
+      page: {
+        currentPage: 1,
         pageSize: 10,
-        id: ''
+        total: 0
+      },
+      queryParams: {
+        code: undefined,
+        roleDesc: undefined
       }
     }
   },
   created() {
-    this.$nextTick(() => {
-      this.init()
-    })
+    this.getList()
   },
   beforeRouteLeave: function(to, from, next) {
     if (to.path === this.toPath) {
@@ -102,12 +126,25 @@ export default {
     next()
   },
   methods: {
-    format,
-    beforeInit() {
-      this.url = '/sys_mgr/role_mgr/query/pageList/' + this.page + '/' + this.size
-      const sort = 'id,desc'
-      this.params = { page: this.page, size: this.size, sort: sort }
-      return true
+    getList() {
+      this.loading = true
+      let params = {}
+      params = this.queryParams
+      params.pageNum = this.page.currentPage
+      params.pageSize = this.page.pageSize
+      query(params).then(res => {
+        if (res.code === '200') {
+          this.data = res.obj
+          this.page.total = Number(res.total)
+          // // this.init()
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        this.loading = false
+      })
     },
     subDelete(id) {
       this.delLoading = true
@@ -118,7 +155,7 @@ export default {
       }).then(() => {
         del(id).then(res => {
           this.delLoading = false
-          this.dleChangePage()
+          // this.dleChangePage()
           this.init()
           if (res.code === '200') {
             this.$message({
@@ -160,22 +197,9 @@ export default {
       this.selections = selections
       this.$emit('selectionChange', { selections: selections })
     },
-    toQuery(params) {
-      if (!params.id) {
-        this.page = 1
-        this.init()
-        return
-      }
-      query(params).then((res) => {
-        if (res.code === '200') {
-          this.data = res.obj
-          this.total = res.obj.length
-          // // this.init()
-        } else {
-          this.$message.error(res.msg)
-        }
-        this.query = ''
-      })
+    toQuery() {
+      this.page.currentPage = 1
+      this.getList()
     }
   }
 }
@@ -201,8 +225,5 @@ export default {
   > .el-input__inner {
     height: 32px !important;
   }
-}
-.head-container {
-  margin-bottom: 20px;
 }
 </style>

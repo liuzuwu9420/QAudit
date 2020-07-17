@@ -18,6 +18,10 @@ import './icons' // icon
 import './permission' // permission control
 // import './utils/error-log' // error log
 
+import { addDateRange, download } from '@/utils/common'
+// 全局方法挂载
+Vue.prototype.addDateRange = addDateRange
+Vue.prototype.download = download
 // import * as filters from './filters' // global filters
 
 /**

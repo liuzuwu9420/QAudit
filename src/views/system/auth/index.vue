@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-col :span="12">
+      <el-col>
         <el-select
           v-model="checkedRoleId"
           placeholder="请选择一个角色"
@@ -16,15 +16,8 @@
             :value="item.id"
           />
         </el-select>
-      </el-col>
-      <!-- <el-col :span="4">
-        <div></div>
-      </el-col> -->
-      <el-col :span="12">
         <el-button size="mini" type="primary" @click="resetAllAuth">重置所有权限</el-button>
         <el-button size="mini" type="primary" @click="refreshAuth">更新权限</el-button>
-        <!--      <el-input v-model="query" clearable size="small" placeholder="请输入你要搜索的内容" style="width: 200px;" class="filter-item" />
-        <el-button class="filter-item" size="small" type="success" icon="el-icon-search">搜索</el-button>-->
       </el-col>
     </el-row>
 
@@ -193,6 +186,7 @@ import {
 } from '@/api/auth'
 
 export default {
+  name: 'AuthorityManage',
   mixins: [initData],
   data() {
     return {
@@ -694,13 +688,11 @@ export default {
 </script>
 
 <style lang="scss">
-.head-container {
-  margin-bottom: 20px;
-}
 
 .roleSelect {
-  width: 90%;
+  width: 200px;
   margin-bottom: 20px;
+  margin-right: 10px;
 }
 
 .icon-save {

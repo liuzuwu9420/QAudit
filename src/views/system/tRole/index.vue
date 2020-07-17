@@ -2,8 +2,8 @@
   <div class="app-container">
     <eform ref="form" :is-add="isAdd" />
     <iform ref="importForm" />
-    <el-form ref="queryForm" :model="queryParams" :inline="true">
-      <div class="head-container">
+    <div class="head-container">
+      <el-form ref="queryForm" :model="queryParams" :inline="true">
         <el-form-item label="ID" prop="id" class="form-item-self">
           <el-input
             v-model="queryParams.id"
@@ -11,7 +11,7 @@
             placeholder="请输入ID"
             style="width: 200px;"
             class="filter-item"
-            @keyup.enter.native="toQuery(queryParams)"
+            @keyup.enter.native="toQuery()"
           />
         </el-form-item>
         <el-form-item label="角色编码" prop="code" class="form-item-self">
@@ -21,7 +21,7 @@
             placeholder="请输入角色编码"
             style="width: 200px;"
             class="filter-item"
-            @keyup.enter.native="toQuery(queryParams)"
+            @keyup.enter.native="toQuery()"
           />
         </el-form-item>
         <el-form-item label="角色名称" prop="roleDesc" class="form-item-self">
@@ -31,7 +31,7 @@
             placeholder="请输入角色名称"
             style="width: 200px;"
             class="filter-item"
-            @keyup.enter.native="toQuery(queryParams)"
+            @keyup.enter.native="toQuery()"
           />
         </el-form-item>
         <el-form-item label="排序" prop="sn" class="form-item-self">
@@ -41,7 +41,7 @@
             placeholder="请输入排序"
             style="width: 200px;"
             class="filter-item"
-            @keyup.enter.native="toQuery(queryParams)"
+            @keyup.enter.native="toQuery()"
           />
         </el-form-item>
         <el-form-item label="创建人ID" prop="creater" class="form-item-self">
@@ -51,7 +51,7 @@
             placeholder="请输入创建人ID"
             style="width: 200px;"
             class="filter-item"
-            @keyup.enter.native="toQuery(queryParams)"
+            @keyup.enter.native="toQuery()"
           />
         </el-form-item>
         <el-form-item label="创建时间" prop="createTime" class="form-item-self">
@@ -72,7 +72,7 @@
             placeholder="请输入修改人ID"
             style="width: 200px;"
             class="filter-item"
-            @keyup.enter.native="toQuery(queryParams)"
+            @keyup.enter.native="toQuery()"
           />
         </el-form-item>
         <el-form-item label="修改时间" prop="changeTime" class="form-item-self">
@@ -93,7 +93,7 @@
             placeholder="请输入创建人名称"
             style="width: 200px;"
             class="filter-item"
-            @keyup.enter.native="toQuery(queryParams)"
+            @keyup.enter.native="toQuery()"
           />
         </el-form-item>
         <el-form-item label="修改人名称" prop="changerDesc" class="form-item-self">
@@ -103,7 +103,7 @@
             placeholder="请输入修改人名称"
             style="width: 200px;"
             class="filter-item"
-            @keyup.enter.native="toQuery(queryParams)"
+            @keyup.enter.native="toQuery()"
           />
         </el-form-item>
         <el-form-item>
@@ -112,7 +112,7 @@
             size="mini"
             type="success"
             icon="el-icon-search"
-            @click="toQuery(queryParams)"
+            @click="toQuery()"
           >搜索</el-button>
           <el-button
             class="filter-item"
@@ -136,19 +136,18 @@
             @click="handleImport"
           >导入</el-button>
         </el-form-item>
-      </div>
-    </el-form>
+      </el-form>
+    </div>
     <!--表格渲染-->
     <el-table
       v-loading="loading"
       :data="data"
       size="small"
       :stripe="true"
-      :highlight-current-row="true"
+      highlight-current-row
       style="width: 100%;"
       @selection-change="selectionChange"
     >
-      <el-table-column type="index" width="80" />
       <el-table-column prop="id" label="ID" />
       <el-table-column prop="code" label="角色编码" />
       <el-table-column prop="roleDesc" label="角色名称" />
@@ -161,7 +160,7 @@
       <el-table-column prop="changerDesc" label="修改人名称" />
 
       <el-table-column label="操作" width="130px" align="center" fixed="right">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-button size="mini" type="primary" icon="el-icon-edit" @click="edit(scope.row.id)" />
           <el-button
             slot="reference"
@@ -174,29 +173,38 @@
       </el-table-column>
     </el-table>
     <!--分页组件-->
-    <el-pagination
+    <pagination
+      v-show="page.total>0"
+      :total="page.total"
+      :page.sync="page.currentPage"
+      :limit.sync="page.pageSize"
+      @pagination="getList"
+    />
+    <!-- <el-pagination
       :total="total"
-      :current-page="page"
+      :current-page="currentPage"
       style="margin-top: 8px;float: right"
       layout="total, prev, pager, next, sizes"
       @size-change="sizeChange"
       @current-change="pageChange"
-    />
+    /> -->
   </div>
 </template>
 
 <script>
-import initData from '@/mixins/initData'
 import eform from './form'
 import iform from './importForm'
+import Pagination from '@/components/Pagination'
 import { del, query, detail, exportData } from '@/api/TRole'
 
 export default {
   name: 'TRole',
-  components: { eform, iform },
-  mixins: [initData],
+  components: { eform, iform, Pagination },
   data() {
     return {
+      loading: true,
+      data: [],
+      isAdd: false,
       delLoading: false,
       showBatchDelete: {
         // 是否显示操作组件
@@ -209,9 +217,12 @@ export default {
         default: true
       },
       selections: [], // 列表选中列
-      queryParams: {
-        pageNum: 1,
+      page: {
+        currentPage: 1,
         pageSize: 10,
+        total: 0
+      },
+      queryParams: {
         id: undefined,
         code: undefined,
         roleDesc: undefined,
@@ -226,9 +237,7 @@ export default {
     }
   },
   created() {
-    this.$nextTick(() => {
-      this.init()
-    })
+    this.getList()
   },
   beforeRouteLeave: function(to, from, next) {
     if (to.path === this.toPath) {
@@ -239,11 +248,25 @@ export default {
     next()
   },
   methods: {
-    beforeInit() {
-      this.url = '/xef/tRole/query/pageList/' + this.page + '/' + this.size
-      const sort = 'id,desc'
-      this.params = { page: this.page, size: this.size, sort: sort }
-      return true
+    getList() {
+      this.loading = true
+      let params = {}
+      params = this.queryParams
+      params.pageNum = this.page.currentPage
+      params.pageSize = this.page.pageSize
+      query(params).then(res => {
+        if (res.code === '200') {
+          this.data = res.obj
+          this.page.total = Number(res.total)
+          // // this.init()
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        this.loading = false
+      })
     },
     subDelete(id) {
       this.delLoading = true
@@ -255,8 +278,8 @@ export default {
         del(id)
           .then(res => {
             this.delLoading = false
-            this.dleChangePage()
-            this.init()
+            // this.dleChangePage()
+            this.getList()
             if (res.code === '200') {
               this.$message({
                 message: '删除成功',
@@ -309,25 +332,9 @@ export default {
       this.selections = selections
       this.$emit('selectionChange', { selections: selections })
     },
-    toQuery(param) {
-      if (!param) {
-        this.page = 1
-        this.init()
-        return
-      }
-      query(param).then(res => {
-        if (res.code === '200') {
-          this.data = res.obj
-          this.total = res.obj.length
-          // // this.init()
-        } else {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
-        this.query = ''
-      })
+    toQuery() {
+      this.page.currentPage = 1
+      this.getList()
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -374,9 +381,6 @@ export default {
   > .el-input__inner {
     height: 32px !important;
   }
-}
-.head-container {
-  margin-bottom: 20px;
 }
 .form-item-self {
   margin-bottom: 0;

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 import { login, logout } from '@/api/login'
-import { findEmployByUserName } from '@/api/emplotee'
+import { findEmployByUserName } from '@/api/Employee'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -16,7 +16,7 @@ const state = {
     enabled: ''
   }, // 当前登录用户的个人信息
   roles: [], // 当前登录用户的权限集合
-  token: getToken('Token'),
+  token: getToken('Token') || '',
   checkToken: false,
   jwtObj: { // 当前登录用户的用户令牌包含的信息
     sub: '', // 用户名
@@ -46,6 +46,7 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
+    if (getToken('Token')) { removeToken('Token') }
     const { userName, password } = userInfo
     return new Promise((resolve, reject) => {
       /* commit('SET_TOKEN', 'token')

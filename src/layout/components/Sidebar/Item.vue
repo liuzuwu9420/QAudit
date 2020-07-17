@@ -10,10 +10,14 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    value: {
+      type: String,
+      default: ''
     }
   },
   render(h, context) {
-    const { icon, title } = context.props
+    const { icon, title, value } = context.props
     const vnodes = []
 
     if (icon) {
@@ -21,7 +25,8 @@ export default {
     }
 
     if (title) {
-      vnodes.push(<span slot='title'>{(title)}</span>)
+      const titleValue = value ? `(${value})` : ''
+      vnodes.push(<span slot='title'>{(title)}<span style='margin-left: 10px; color: red'>{(titleValue)}</span></span>)
     }
     return vnodes
   }

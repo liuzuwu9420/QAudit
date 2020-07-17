@@ -5,7 +5,9 @@ const getters = {
   device: state => state.app.device,
   visitedViews: state => state.tagsView.visitedViews,
   cachedViews: state => state.tagsView.cachedViews,
-  token: state => state.user.token,
+  token: state => {
+    return 'xytoken_' + state.user.token
+  },
   userInfo: state => state.user.userInfo,
   checkToken: state => state.user.checkToken,
   roles: state => state.user.roles,

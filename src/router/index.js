@@ -85,26 +85,58 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
-    path: '/audit',
+    path: '/upcoming',
     component: Layout,
-    redirect: '/audit/plan',
-    name: 'Audit',
+    redirect: '/upcoming/plan',
+    name: 'Upcoming',
     meta: {
-      title: 'audit',
-      icon: 'component'
+      title: 'upcoming',
+      icon: 'guide'
     },
     children: [
       {
         path: 'plan',
-        component: () => import('@/views/audit/audit-plan'),
+        component: () => import('@/views/upcoming/audit-plan'),
         name: 'AuditPlan',
-        meta: { title: 'auditPlan' }
+        meta: { title: 'auditPlan', value: '1' }
       },
       {
-        path: 'task',
+        path: 'report',
+        component: () => import('@/views/upcoming/audit-report'),
+        name: 'AuditReport',
+        meta: { title: 'auditReport', value: '1' }
+      },
+      {
+        path: 'processing',
+        component: () => import('@/views/upcoming/processing'),
+        name: 'ProcessingProblrm',
+        meta: { title: 'processingProblrm', value: '3' }
+      }
+    ]
+  },
+  {
+    path: '/plan',
+    component: Layout,
+    redirect: '/plan/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/upcoming/audit-plan'),
+        name: 'AuditPlan',
+        meta: { title: 'auditPlan', icon: 'edit' }
+      }
+    ]
+  },
+  {
+    path: '/task',
+    component: Layout,
+    redirect: '/task/index',
+    children: [
+      {
+        path: 'index',
         component: () => import('@/views/audit/audit-task'),
         name: 'AuditTask',
-        meta: { title: 'auditTask' }
+        meta: { title: 'auditTask', icon: 'education' }
       },
       {
         path: 'conclusion',
@@ -112,12 +144,50 @@ export const asyncRoutes = [
         name: 'AuditConclusion',
         hidden: true,
         meta: { title: 'auditConclusion' }
+      },
+      {
+        path: 'probRecord',
+        component: () => import('@/views/audit/audit-problem-recording'),
+        name: 'AuditProblemRecording',
+        hidden: true,
+        meta: { title: 'auditProblemRecording' }
+      }
+    ]
+  },
+  {
+    path: '/problem',
+    component: Layout,
+    redirect: '/problem/pending',
+    name: 'Problem',
+    meta: {
+      title: 'problem',
+      icon: 'form'
+    },
+    children: [
+      {
+        path: 'pending',
+        component: () => import('@/views/problem/pending'),
+        name: 'Pending',
+        meta: { title: 'pending', value: '2' }
+      },
+      {
+        path: 'processing',
+        component: () => import('@/views/problem/processing'),
+        name: 'Processing',
+        meta: { title: 'processing', value: '3' }
+      },
+      {
+        path: 'completed',
+        component: () => import('@/views/problem/completed'),
+        name: 'Completed',
+        meta: { title: 'completed', value: '2' }
       }
     ]
   },
   {
     path: '/check',
     component: Layout,
+    redirect: '/check/index',
     children: [
       {
         path: 'index',
@@ -130,12 +200,68 @@ export const asyncRoutes = [
   {
     path: '/maintain',
     component: Layout,
+    redirect: '/maintain/index',
     children: [
       {
         path: 'index',
         component: () => import('@/views/maintain/index'),
-        name: 'maintain',
-        meta: { title: 'maintain', icon: 'list' }
+        name: 'Maintain',
+        meta: { title: 'maintain', icon: 'peoples' }
+      }
+    ]
+  },
+  {
+    path: '/report',
+    component: Layout,
+    redirect: '/report/reviewsNumber',
+    name: 'Report',
+    meta: {
+      title: 'report',
+      icon: 'tree-table'
+    },
+    children: [
+      {
+        path: 'reviewsNumber',
+        component: () => import('@/views/report/reviews-number'),
+        name: 'ReviewsNumber',
+        meta: { title: 'reviewsNumber' }
+      },
+      {
+        path: 'problemSynthesis',
+        component: () => import('@/views/report/problem-synthesis'),
+        name: 'ProblemSynthesis',
+        meta: { title: 'problemSynthesis' }
+      },
+      {
+        path: 'feedbackOverdue',
+        component: () => import('@/views/report/feedback-overdue'),
+        name: 'FeedbackOverdue',
+        meta: { title: 'feedbackOverdue' }
+      },
+      {
+        path: 'measuresOverdue',
+        component: () => import('@/views/report/measures-overdue'),
+        name: 'MeasuresOverdue',
+        meta: { title: 'measuresOverdue' }
+      },
+      {
+        path: 'allOpeningItems',
+        component: () => import('@/views/report/all-opening-items'),
+        name: 'AllOpeningItems',
+        meta: { title: 'allOpeningItems' }
+      }
+    ]
+  },
+  {
+    path: '/account',
+    component: Layout,
+    redirect: '/account/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/account/account-manage'),
+        name: 'AccountManage',
+        meta: { title: 'accountManage', icon: 'user' }
       }
     ]
   },
@@ -185,6 +311,57 @@ export const asyncRoutes = [
         component: () => import('@/views/system/gen/index.vue'),
         name: 'Gen',
         meta: { title: 'gen' }
+      }
+    ]
+  },
+  {
+    path: '/activiti',
+    component: Layout,
+    redirect: '/system/activiti',
+    name: 'ActivitiManage',
+    meta: {
+      title: 'activitiManage',
+      icon: 'component'
+    },
+    children: [
+      {
+        path: 'activitiModel',
+        component: () => import('@/views/system/activiti/index.vue'),
+        name: 'ActivitiModel',
+        meta: { title: 'ActivitiModel' }
+      },
+      {
+        path: 'activitiDeploy',
+        component: () => import('@/views/system/activitiDeploy/index.vue'),
+        name: 'ActivitiDeploy',
+        meta: { title: 'ActivitiDeploy' }
+      },
+      {
+        path: 'detail/:id',
+        component: () => import('@/views/system/activiti/detail.vue'),
+        name: 'ActivitiDetail',
+        hidden: true,
+        meta: { title: 'ActivitiDetail' }
+      }
+    ]
+  },
+  {
+    path: '/pdf/download',
+    component: () => import('@/views/pdf/download'),
+    name: 'PdfDownload',
+    hidden: true
+  },
+  {
+    path: '/password',
+    component: Layout,
+    redirect: '/password/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/account/password'),
+        name: 'Password',
+        hidden: true,
+        meta: { title: 'password' }
       }
     ]
   },

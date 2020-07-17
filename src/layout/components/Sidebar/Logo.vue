@@ -2,12 +2,12 @@
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo">
-        <h1 v-else class="sidebar-title">{{ title }} </h1>
-      </router-link>
-      <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <!-- <img v-if="logo" :src="logo" class="sidebar-logo"> -->
         <h1 class="sidebar-title">{{ title }} </h1>
+      </router-link>
+      <router-link v-else key="expand" class="sidebar-logo-link" to="/">
+        <img v-if="logo" :src="logo" class="sidebar-logo">
+        <!-- <h1 class="sidebar-title">{{ title }} </h1> -->
       </router-link>
     </transition>
   </div>
@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      title: '信源科技',
+      title: 'Ameco',
       logo: require('../../../assets/logo_images/logo.png')
     }
   }
@@ -55,7 +55,7 @@ export default {
     width: 100%;
 
     & .sidebar-logo {
-      width: 32px;
+      width: 80%;
       height: 32px;
       vertical-align: middle;
       margin-right: 12px;

@@ -8,10 +8,11 @@ export const listTable = (params) => {
   })
 }
 // 模糊查询
-export const query = (tableName) => {
+export const query = (params) => {
   return request({
-    url: `/sys_mgr/gen/query/likeList/${tableName}`,
-    method: 'get'
+    url: `/sys_mgr/gen/list/${params.pageNum}/${params.pageSize}`,
+    method: 'get',
+    params
   })
 }
 // 生成代码

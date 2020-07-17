@@ -40,7 +40,8 @@ export const detail = (id) => {
 // 模糊查询
 export const query = (params) => {
   return request({
-    url: `/sys_mgr/role_mgr/query/likeList/${params.id}`,
-    method: 'get'
+    url: '/sys_mgr/role_mgr/query/likeList',
+    method: 'get',
+    params
   })
 }
